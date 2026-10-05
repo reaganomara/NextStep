@@ -1,59 +1,35 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NextStep
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+NextStep is an AI-powered app designed to help people with health anxiety decide what to do next when they feel overwhelmed by a symptom.
 
-## About Laravel
+## The Problem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+People with health anxiety can become overwhelmed when they notice a physical symptom. They may repeatedly Google symptoms, search social media, or seek reassurance, which can make their anxiety worse. In these moments, it can be difficult to determine what they should actually do next.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Who NextStep Helps
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+NextStep is designed for people who experience health anxiety and want a calmer, more structured way to decide their next step.
 
-## Learning Laravel
+## What the AI Does
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+NextStep uses AI to focus on one main question: "What should I do right now?" Instead of diagnosing a user or providing a long list of possible illnesses, the AI will ask a small number of safety-focused questions and guide the user toward an appropriate next step. When emergency warning signs are not identified, NextStep can also guide users toward strategies to help manage anxiety and reduce repeated symptom checking.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Safety Disclaimer
 
-## Laravel Sponsors
+NextStep is not a medical professional and does not provide medical advice, diagnosis, or treatment. It is not a replacement for a doctor, therapist, or other qualified healthcare professional.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+If you are experiencing a medical emergency, call 911.
 
-### Premium Partners
+If you are experiencing a mental health or suicide-related crisis, call or text 988 to reach the Suicide & Crisis Lifeline.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Running NextStep Locally
 
-## Contributing
+1. Clone the GitHub repository.
+2. Open the NextStep project folder.
+3. Install the required Laravel dependencies.
+4. Run `php artisan serve`.
+5. Open `http://127.0.0.1:8000` in your browser.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Current Status
+NextStep is currently in development. The initial Laravel skeleton and landing page have been created, with additional features coming soon.
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
