@@ -33,3 +33,4 @@ If you are experiencing a mental health or suicide-related crisis, call or text 
 ## Current Status
 NextStep is currently in development. The initial Laravel skeleton and landing page have been created, with additional features coming soon.
 
+Reagan O'Mara, CUA Busch School AI Vibe Coding Contest, Fall 2026
