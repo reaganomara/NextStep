@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -125,6 +126,19 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        // Safety override demonstration events. Each line is only a timestamp,
+        // a predefined scenario ID, and an override category. The file lives
+        // outside the public directory and is ignored by Git.
+        'safety_override' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/safety-override.log'),
+            'level' => 'warning',
+            'formatter' => LineFormatter::class,
+            'formatter_with' => [
+                'format' => "%message%\n",
+            ],
         ],
 
     ],
