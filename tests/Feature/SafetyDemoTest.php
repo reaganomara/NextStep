@@ -36,6 +36,18 @@ class SafetyDemoTest extends TestCase
             ->assertSee('This is a demonstration, not a working AI symptom checker.');
     }
 
+    public function test_homepage_hides_withheld_guidance_and_explains_why(): void
+    {
+        $response = $this->get('/')
+            ->assertOk()
+            ->assertSee('In the real NextStep app, withheld anxiety guidance would never be shown to the user during an emergency.')
+            ->assertSee('Show what was withheld');
+
+        foreach (['demo-emergency-warning', 'demo-override-priority'] as $id) {
+            $response->assertDontSee(config("safety_demo.scenarios.$id.support_guidance"));
+        }
+    }
+
     public function test_ordinary_example_returns_support_guidance_and_logs_nothing(): void
     {
         $this->postJson('/safety-demo/demo-ordinary-worry')

@@ -224,6 +224,28 @@
 
         .withheld .text { text-decoration: line-through; }
 
+        .withheld-note { background: var(--white); border: 1px solid var(--neutral-300); font-size: 0.92rem; }
+
+        .withheld-note .result-label { color: var(--neutral-700); }
+
+        button.toggle {
+            font: inherit;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--blue-700);
+            background: var(--white);
+            border: 1px solid var(--blue-700);
+            border-radius: 8px;
+            padding: 0.45rem 0.9rem;
+            cursor: pointer;
+        }
+
+        button.toggle:hover, button.toggle:focus-visible { background: var(--blue-100); }
+
+        .withheld[hidden] { display: none; }
+
+        .withheld:not([hidden]) { margin-top: 0.75rem; margin-bottom: 0; }
+
         .logged { background: var(--white); border: 1px solid var(--neutral-300); font-size: 0.92rem; }
 
         .logged code { word-break: break-word; }
@@ -239,7 +261,7 @@
             .hero { padding: 3rem 0 3.25rem; }
             section { padding: 2rem 0; }
             .card { padding: 1.25rem; }
-            button.run { width: 100%; }
+            button.run, button.toggle { width: 100%; }
         }
     </style>
 </head>
@@ -341,6 +363,10 @@
                         emergency guidance overrides ordinary anxiety-support guidance, and the override is
                         logged on the server.
                     </p>
+                    <p>
+                        <strong>In the real NextStep app, withheld anxiety guidance would never be shown to the user during an emergency.</strong>
+                        This demonstration hides it by default and lets you reveal it only so you can see what the override replaced.
+                    </p>
                     <p class="note">
                         Each override is logged with only a timestamp, the predefined scenario ID, and the
                         override category. No names, IP addresses, symptoms, or personal health information
@@ -396,6 +422,33 @@
                 return div;
             }
 
+            // The withheld guidance stays hidden until the visitor explicitly asks to see it.
+            function withheldSection(data) {
+                var note = box('withheld-note', 'Anxiety-support guidance withheld', 'Ordinary anxiety-support guidance was withheld by the override. The real NextStep app would never show withheld guidance to the user during an emergency. It is available here for demonstration purposes only.');
+
+                var withheld = box('withheld', 'Demonstration only: guidance withheld by the override', data.withheld_support_guidance);
+                withheld.id = 'withheld-' + data.scenario_id;
+                withheld.hidden = true;
+
+                var toggle = document.createElement('button');
+                toggle.type = 'button';
+                toggle.className = 'toggle';
+                toggle.textContent = 'Show what was withheld';
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-controls', withheld.id);
+                toggle.addEventListener('click', function () {
+                    var show = withheld.hidden;
+                    withheld.hidden = !show;
+                    toggle.setAttribute('aria-expanded', show ? 'true' : 'false');
+                    toggle.textContent = show ? 'Hide what was withheld' : 'Show what was withheld';
+                });
+
+                note.appendChild(toggle);
+                note.appendChild(withheld);
+
+                return note;
+            }
+
             function render(target, data) {
                 target.replaceChildren();
 
@@ -406,7 +459,7 @@
                 }
 
                 target.appendChild(box('override', '⚠ Safety override occurred: ' + data.override_label, data.emergency_guidance));
-                target.appendChild(box('withheld', 'Anxiety-support guidance withheld by the override', data.withheld_support_guidance));
+                target.appendChild(withheldSection(data));
 
                 var logged = box('logged', 'Logged on the server', 'Recorded: a timestamp, scenario ID "' + data.scenario_id + '", and override category "' + data.override_category + '". Nothing else was recorded.');
                 target.appendChild(logged);
