@@ -42,7 +42,8 @@ class SafetyDemoController extends Controller
             'override' => true,
             'override_category' => $category,
             'override_label' => $override['label'],
-            'emergency_guidance' => $override['guidance'],
+            // A scenario may give its own emergency guidance; otherwise the category default is used.
+            'emergency_guidance' => $definition['emergency_guidance'] ?? $override['guidance'],
             'withheld_support_guidance' => $definition['support_guidance'],
             'logged' => true,
         ]);

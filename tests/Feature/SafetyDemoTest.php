@@ -43,7 +43,7 @@ class SafetyDemoTest extends TestCase
             ->assertSee('In the real NextStep app, withheld anxiety guidance would never be shown to the user during an emergency.')
             ->assertSee('Show what was withheld');
 
-        foreach (['demo-emergency-warning', 'demo-override-priority'] as $id) {
+        foreach (['demo-emergency-warning', 'demo-override-priority', 'demo-impending-doom'] as $id) {
             $response->assertDontSee(config("safety_demo.scenarios.$id.support_guidance"));
         }
     }
@@ -110,6 +110,81 @@ class SafetyDemoTest extends TestCase
         $this->assertStringNotContainsString('Jane', $contents);
         $this->assertStringNotContainsString('chest pain', $contents);
         $this->assertStringNotContainsString('127.0.0.1', $contents);
+    }
+
+    public function test_homepage_lists_all_four_scenarios(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'demo-ordinary-worry',
+                'demo-emergency-warning',
+                'demo-override-priority',
+                'Sense of Impending Doom',
+                'Is this just anxiety?',
+                'demo-impending-doom',
+            ]);
+    }
+
+    public function test_impending_doom_example_prioritizes_emergency_evaluation_and_is_logged(): void
+    {
+        $scenario = config('safety_demo.scenarios.demo-impending-doom');
+
+        $response = $this->postJson('/safety-demo/demo-impending-doom')
+            ->assertOk()
+            ->assertJson([
+                'scenario_id' => 'demo-impending-doom',
+                'override' => true,
+                'override_category' => 'medical_emergency',
+                'override_label' => 'Medical emergency',
+                'emergency_guidance' => $scenario['emergency_guidance'],
+                'withheld_support_guidance' => $scenario['support_guidance'],
+                'logged' => true,
+            ])
+            ->assertJsonMissingPath('support_guidance');
+
+        $guidance = $response->json('emergency_guidance');
+        $this->assertStringContainsString('Call 911', $guidance);
+        $this->assertStringContainsString('panic attack', $guidance);
+        $this->assertStringContainsString('serious medical emergencies', $guidance);
+        $this->assertStringContainsString('emergency evaluation', $guidance);
+
+        // Relaxation or CBT guidance must never appear in the emergency response itself.
+        $this->assertStringNotContainsString($scenario['support_guidance'], $guidance);
+        $this->assertStringNotContainsStringIgnoringCase('breathing:', $guidance);
+
+        $lines = file($this->logPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $this->assertCount(1, $lines);
+
+        $event = json_decode($lines[0], true);
+        $this->assertSame(['timestamp', 'scenario_id', 'override_category'], array_keys($event));
+        $this->assertSame('demo-impending-doom', $event['scenario_id']);
+        $this->assertSame('medical_emergency', $event['override_category']);
+    }
+
+    public function test_impending_doom_guidance_does_not_diagnose_panic_or_falsely_reassure(): void
+    {
+        $guidance = strtolower(config('safety_demo.scenarios.demo-impending-doom.emergency_guidance'));
+
+        foreach ([
+            'just anxiety',
+            'only anxiety',
+            'nothing to worry',
+            'you are having a panic attack',
+            "you're having a panic attack",
+            'this is a panic attack',
+            'you are fine',
+            'harmless',
+        ] as $phrase) {
+            $this->assertStringNotContainsString($phrase, $guidance);
+        }
+    }
+
+    public function test_existing_emergency_example_still_uses_default_category_guidance(): void
+    {
+        $this->postJson('/safety-demo/demo-emergency-warning')
+            ->assertOk()
+            ->assertJson(['emergency_guidance' => config('safety_demo.overrides.medical_emergency.guidance')]);
     }
 
     public function test_unknown_scenario_is_rejected(): void

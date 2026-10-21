@@ -33,15 +33,16 @@ These phone numbers are for the United States.
 
 ## Safety Override Demonstration
 
-The homepage includes a small, clearly labeled safety override demonstration. It is a demonstration, not a working AI symptom checker. It uses three fictional, predefined examples. Visitors cannot type anything in, and no AI is involved.
+The homepage includes a small, clearly labeled safety override demonstration. It is a demonstration, not a working AI symptom checker. It uses four fictional, predefined examples. Visitors cannot type anything in, and no AI is involved.
 
 | Scenario ID | What it shows | Override category |
 | --- | --- | --- |
 | `demo-ordinary-worry` | Ordinary anxiety-support guidance is shown. | None |
 | `demo-emergency-warning` | Emergency guidance replaces the anxiety-support guidance. | `medical_emergency` |
 | `demo-override-priority` | The fictional person asks only for a relaxation tip, but a warning sign is present, so emergency guidance takes priority. | `mental_health_crisis` |
+| `demo-impending-doom` | A sudden sense of impending doom with a racing heart and trouble breathing. It can occur with panic attacks but also with serious medical emergencies, so emergency evaluation (call 911) takes priority and relaxation guidance is withheld. | `medical_emergency` |
 
-When an override happens, the page shows a visible "Safety override occurred" notice, shows the anxiety-support guidance that was withheld, and confirms the event was logged.
+When an override happens, the page shows a visible "Safety override occurred" notice, hides the withheld anxiety-support guidance behind a demonstration-only "Show what was withheld" toggle, and confirms the event was logged.
 
 ### Override logging
 
