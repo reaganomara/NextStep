@@ -48,6 +48,29 @@ class SafetyDemoTest extends TestCase
         }
     }
 
+    public function test_homepage_shows_emergency_contacts_prominently(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('aria-label="Emergency contacts"', false)
+            ->assertSee('href="tel:911"', false)
+            ->assertSee('href="tel:988"', false)
+            ->assertSee('href="tel:18002221222"', false)
+            ->assertSee('These phone numbers are for the United States.');
+    }
+
+    public function test_homepage_shows_sourced_awareness_dates_and_walk_links(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeInOrder(['Mental Health Awareness Month', 'https://mhanational.org/mental-health-month/'], false)
+            ->assertSeeInOrder(['September 10', 'World Suicide Prevention Day', 'https://www.who.int/campaigns/world-suicide-prevention-day'], false)
+            ->assertSeeInOrder(['October 10', 'World Mental Health Day', 'https://www.who.int/campaigns/world-mental-health-day'], false)
+            ->assertSee('https://www.namiwalks.org/', false)
+            ->assertSee('https://afsp.org/out-of-the-darkness-walks/', false)
+            ->assertSee('NextStep is not affiliated with, endorsed by, or partnered with these organizations');
+    }
+
     public function test_ordinary_example_returns_support_guidance_and_logs_nothing(): void
     {
         $this->postJson('/safety-demo/demo-ordinary-worry')
