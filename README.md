@@ -1,8 +1,8 @@
 # NextStep
 
-**Live website:** http://nextstep-reagan.us-east-2.elasticbeanstalk.com
+**Live website:** https://dvh5yx5o2vs21.cloudfront.net
 
-The NextStep Laravel app is hosted on AWS Elastic Beanstalk.
+The NextStep Laravel app is hosted on AWS Elastic Beanstalk and served to visitors through Amazon CloudFront. Please use the HTTPS address above; the safety demonstrations do not work on the plain-HTTP Elastic Beanstalk address.
 
 NextStep is an AI-powered app being developed to help people experiencing health anxiety decide what to do when physical symptoms feel overwhelming. It will not diagnose medical conditions.
 
@@ -70,7 +70,7 @@ No real AI chatbot has been built yet. When AI features are developed:
 
 ## HTTPS
 
-The live website currently uses HTTP. **HTTPS is required before judging** and has not been set up yet.
+Visitors connect to the live website over HTTPS through CloudFront. The connection from CloudFront to the Elastic Beanstalk server still uses HTTP, so the site is **not yet encrypted end to end**. Securing that connection is required before NextStep adds real AI features or collects any personal health information.
 
 ## Running NextStep Locally
 
