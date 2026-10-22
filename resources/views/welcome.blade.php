@@ -43,6 +43,10 @@
             --alert-700: #a12b2b;
             --alert-100: #fdecec;
 
+            /* Crisis support (guided examples) */
+            --violet-700: #5a3d8a;
+            --violet-100: #f2edf9;
+
             --radius-lg: 20px;
             --radius-md: 12px;
             --radius-sm: 8px;
@@ -592,6 +596,304 @@
 
         .logged code { word-break: break-word; }
 
+        /* Guided example walkthrough */
+        .stepper {
+            list-style: none;
+            padding: 0;
+            margin: 1.25rem 0 1.75rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .stepper li {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--neutral-500);
+        }
+
+        .stepper li::after {
+            content: "";
+            position: absolute;
+            top: 1rem;
+            left: calc(50% + 1.4rem);
+            right: calc(-50% + 1.4rem);
+            height: 2px;
+            background: var(--neutral-300);
+        }
+
+        .stepper li:last-child::after { display: none; }
+
+        .step-dot {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--neutral-100);
+            border: 2px solid var(--neutral-300);
+            color: var(--neutral-700);
+            font-weight: 700;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stepper li.is-current { color: var(--blue-900); }
+
+        .stepper li.is-current .step-dot {
+            background: var(--blue-700);
+            border-color: var(--blue-700);
+            color: var(--white);
+            box-shadow: 0 0 0 4px var(--blue-100);
+        }
+
+        .stepper li.is-done { color: var(--teal-700); }
+
+        .stepper li.is-done .step-dot { background: var(--teal-100); border-color: var(--teal-500); color: var(--teal-700); }
+
+        .stepper li.is-done::after { background: var(--teal-500); }
+
+        .guided-panel h3 { font-size: 1.2rem; margin-bottom: 0.75rem; }
+
+        .guided-panel h3:focus:not(:focus-visible) { outline: none; }
+
+        .person-grid {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        @media (min-width: 700px) {
+            .person-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        button.person {
+            font: inherit;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            color: var(--neutral-900);
+            background: var(--white);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.1rem;
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        button.person:hover,
+        button.person:focus-visible {
+            border-color: var(--teal-500);
+            box-shadow: var(--shadow-card);
+            transform: translateY(-1px);
+        }
+
+        button.person:disabled { opacity: 0.6; cursor: wait; }
+
+        .avatar {
+            flex: none;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--blue-900);
+            background: linear-gradient(135deg, var(--sage-100), var(--blue-100));
+            box-shadow: 0 0 0 1px var(--neutral-300);
+        }
+
+        .person-name {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--blue-900);
+            margin-bottom: 0.2rem;
+        }
+
+        .fictional {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: var(--yellow-100);
+            color: var(--yellow-700);
+            border: 1px solid var(--yellow-300);
+            border-radius: 999px;
+            padding: 0.05rem 0.55rem;
+        }
+
+        .person-story { display: block; font-size: 0.95rem; line-height: 1.55; color: var(--neutral-700); }
+
+        .person-cta { display: block; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--blue-700); }
+
+        .guided-story {
+            background: var(--neutral-100);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.1rem;
+            max-width: none;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .check-list li {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem 0.75rem;
+            background: var(--white);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            line-height: 1.45;
+            animation: check-in 0.35s ease both;
+        }
+
+        .check-list li:nth-child(2) { animation-delay: 0.3s; }
+
+        .check-list li:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes check-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        .check-q { font-weight: 600; }
+
+        .check-list li.is-skipped .check-q { color: var(--neutral-500); font-weight: 500; }
+
+        .check-result {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 0.15rem 0.75rem;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .check-no { background: var(--sage-100); color: var(--sage-700); }
+
+        .check-yes-urgent { background: var(--alert-100); color: var(--alert-700); border-color: var(--alert-700); }
+
+        .check-yes { background: var(--yellow-100); color: var(--yellow-700); border-color: var(--yellow-300); }
+
+        .check-skipped { background: var(--neutral-100); color: var(--neutral-700); border-color: var(--neutral-300); }
+
+        .check-summary { margin-bottom: 1.25rem; }
+
+        .guided-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        button.link-btn {
+            font: inherit;
+            font-weight: 600;
+            min-height: 44px;
+            background: none;
+            border: 0;
+            color: var(--blue-700);
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+            padding: 0.5rem 0.25rem;
+            cursor: pointer;
+        }
+
+        .outcome {
+            border: 2px solid;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .outcome-title { font-size: 1.4rem; font-weight: 800; line-height: 1.25; margin: 0 0 0.5rem; }
+
+        .outcome p:last-child { margin-bottom: 0; }
+
+        .outcome-emergency { background: var(--alert-100); border-color: var(--alert-700); }
+
+        .outcome-emergency .outcome-title, .outcome-emergency .result-label { color: var(--alert-700); }
+
+        .outcome-crisis { background: var(--violet-100); border-color: var(--violet-700); }
+
+        .outcome-crisis .outcome-title, .outcome-crisis .result-label { color: var(--violet-700); }
+
+        .outcome-professional { background: var(--yellow-100); border-color: var(--yellow-300); }
+
+        .outcome-professional .outcome-title, .outcome-professional .result-label { color: var(--yellow-700); }
+
+        .outcome-self_care { background: var(--teal-100); border-color: var(--teal-500); }
+
+        .outcome-self_care .outcome-title, .outcome-self_care .result-label { color: var(--teal-700); }
+
+        .outcome-action { margin: 0.25rem 0 0.75rem; }
+
+        .btn-alert { background: var(--alert-700); color: var(--white); border: 2px solid var(--alert-700); }
+
+        .btn-alert:hover { background: var(--alert-800); border-color: var(--alert-800); }
+
+        .btn-violet { background: var(--violet-700); color: var(--white); border: 2px solid var(--violet-700); }
+
+        .btn-violet:hover { background: #47306e; border-color: #47306e; }
+
+        .why h4 { font-size: 1rem; color: var(--blue-900); margin: 0 0 0.25rem; }
+
+        .why .feature-list { margin: 0.5rem 0 1rem; }
+
+        .guided-safety { display: grid; gap: 0.75rem; margin-bottom: 1.25rem; }
+
+        .mini-disclaimer {
+            background: var(--blue-50);
+            border-left: 4px solid var(--blue-700);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .mini-emergency {
+            background: var(--white);
+            border: 1px solid rgba(161, 43, 43, 0.35);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .mini-disclaimer p, .mini-emergency p { margin: 0; max-width: none; }
+
+        .mini-emergency a { color: var(--alert-700); font-weight: 700; }
+
+        .guided-error {
+            background: var(--alert-100);
+            border: 1px solid var(--alert-700);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            margin-top: 1rem;
+        }
+
+        .guided-error[hidden] { display: none; }
+
         /* Mental health awareness */
         .awareness {
             background: linear-gradient(160deg, var(--sage-100) 0%, var(--page) 55%, var(--yellow-100) 100%);
@@ -710,11 +1012,16 @@
             .hero-actions .btn,
             button.run,
             button.toggle { width: 100%; }
+            .stepper li { font-size: 0.78rem; }
+            .guided-actions .run,
+            .outcome-action .btn { width: 100%; }
+            .guided-actions { flex-direction: column-reverse; align-items: stretch; }
         }
 
         @media (forced-colors: active) {
             .decor, .hero::before, .hero::after, .hero-ring, .hero-wave { display: none; }
             .card, .result-box, .date-card { border: 1px solid CanvasText; }
+            button.person, .check-list li, .outcome, .check-result { border: 1px solid CanvasText; }
         }
     </style>
 </head>
@@ -742,7 +1049,8 @@
             </p>
             <p class="intro"><strong>NextStep will not diagnose medical conditions.</strong></p>
             <nav class="hero-actions" aria-label="On this page">
-                <a class="btn btn-light" href="#safety-demo">See the safety demonstration</a>
+                <a class="btn btn-light" href="#guided-demo">Walk through an example</a>
+                <a class="btn btn-ghost" href="#safety-demo">See the safety demonstration</a>
                 <a class="btn btn-ghost" href="#emergency">Emergency information</a>
             </nav>
         </div>
@@ -817,6 +1125,89 @@
                         These phone numbers are for the United States. If you are in another country, contact
                         your local emergency services.
                     </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="guided-demo" aria-labelledby="guided-heading">
+            <span class="decor decor-blue" aria-hidden="true" style="width: 420px; height: 420px; top: -40px; left: -200px;"></span>
+            <div class="container">
+                <div class="card accent-top accent-teal">
+                    <div class="demo-label">Demonstration only</div>
+                    <h2 id="guided-heading">Walk through an example</h2>
+                    <p>
+                        See how NextStep would choose a safe next step. Pick one of the fictional people below.
+                        You will not be asked anything about yourself, nothing you type is collected, and no AI is used.
+                    </p>
+
+                    <ol class="stepper" aria-label="Progress">
+                        <li class="is-current" data-step="1" aria-current="step"><span class="step-dot" aria-hidden="true">1</span>Choose an example</li>
+                        <li data-step="2"><span class="step-dot" aria-hidden="true">2</span>What NextStep checks</li>
+                        <li data-step="3"><span class="step-dot" aria-hidden="true">3</span>The next step</li>
+                    </ol>
+
+                    <div class="guided-panel" data-panel="1">
+                        <h3 tabindex="-1">Step 1: Choose a fictional example</h3>
+                        <div class="person-grid">
+                            @foreach (config('guided_demo.scenarios') as $id => $guided)
+                                <button type="button" class="person" data-url="{{ route('guided-demo.run', $id, false) }}">
+                                    <span class="avatar" aria-hidden="true">{{ mb_substr($guided['name'], 0, 1) }}</span>
+                                    <span>
+                                        <span class="person-name">{{ $guided['name'] }} <span class="fictional">Fictional</span></span>
+                                        <span class="person-story">{{ $guided['story'] }}</span>
+                                        <span class="person-cta" aria-hidden="true">Choose {{ $guided['name'] }} →</span>
+                                    </span>
+                                </button>
+                            @endforeach
+                        </div>
+                        <p class="guided-error" role="alert" hidden></p>
+                    </div>
+
+                    <div class="guided-panel" data-panel="2" hidden>
+                        <h3 tabindex="-1">Step 2: What NextStep checks, in order</h3>
+                        <p class="guided-story"></p>
+                        <p class="note" style="margin-bottom: 1rem;">
+                            Emergencies are always checked first. The first “yes” decides the next step.
+                        </p>
+                        <ol class="check-list"></ol>
+                        <p class="check-summary"></p>
+                        <div class="guided-actions">
+                            <button type="button" class="link-btn" data-action="restart">Choose a different example</button>
+                            <button type="button" class="run" data-action="result">See the next step</button>
+                        </div>
+                    </div>
+
+                    <div class="guided-panel" data-panel="3" hidden>
+                        <h3 tabindex="-1">Step 3: The next step</h3>
+                        <div class="outcome">
+                            <div class="result-label"></div>
+                            <p class="outcome-title"></p>
+                            <p class="outcome-guidance"></p>
+                            <p class="outcome-action" hidden></p>
+                        </div>
+                        <div class="why">
+                            <h4>Why this step</h4>
+                            <ul class="feature-list"></ul>
+                        </div>
+                        <div class="result-box logged guided-logged"></div>
+                        <div class="guided-safety">
+                            <div class="mini-disclaimer">
+                                <p>NextStep is an educational and supportive tool in development. It does not diagnose medical conditions, provide medical advice, or replace doctors, therapists, or other qualified healthcare professionals. Not identifying warning signs does not guarantee that a symptom is harmless.</p>
+                            </div>
+                            <div class="mini-emergency">
+                                <p><strong>In an emergency:</strong> call <a href="tel:911">911</a>. <strong>Crisis:</strong> call or text <a href="tel:988">988</a>. <strong>Poison Control:</strong> <a href="tel:18002221222">1-800-222-1222</a>. These numbers are for the United States.</p>
+                            </div>
+                        </div>
+                        <div class="guided-actions">
+                            <button type="button" class="run" data-action="restart">Try another example</button>
+                        </div>
+                    </div>
+
+                    <p class="sr-only guided-status" aria-live="polite"></p>
+
+                    <noscript>
+                        <p class="note" style="margin-top: 1rem;">JavaScript is required to walk through the examples.</p>
+                    </noscript>
                 </div>
             </div>
         </section>
@@ -1029,6 +1420,150 @@
                             target.replaceChildren(box('logged', 'Demonstration unavailable', 'The example could not be run. Please refresh the page and try again.'));
                         })
                         .finally(function () { button.disabled = false; });
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        // Guided walkthrough: visitors only choose a predefined fictional example.
+        // All text is inserted with textContent, never as HTML.
+        (function () {
+            var root = document.getElementById('guided-demo');
+            if (!root) { return; }
+
+            var token = document.querySelector('meta[name="csrf-token"]').content;
+            var people = root.querySelectorAll('button.person');
+            var errorBox = root.querySelector('.guided-error');
+            var status = root.querySelector('.guided-status');
+            var current = null;
+
+            function el(tag, className, text) {
+                var node = document.createElement(tag);
+                if (className) { node.className = className; }
+                if (text !== undefined) { node.textContent = text; }
+                return node;
+            }
+
+            function show(step) {
+                root.querySelectorAll('[data-panel]').forEach(function (panel) {
+                    panel.hidden = panel.dataset.panel !== String(step);
+                });
+
+                root.querySelectorAll('[data-step]').forEach(function (item) {
+                    var n = Number(item.dataset.step);
+                    item.classList.toggle('is-current', n === step);
+                    item.classList.toggle('is-done', n < step);
+                    if (n === step) { item.setAttribute('aria-current', 'step'); } else { item.removeAttribute('aria-current'); }
+                });
+
+                status.textContent = 'Step ' + step + ' of 3';
+                root.querySelector('[data-panel="' + step + '"] h3').focus();
+            }
+
+            function resultBadge(check, index) {
+                if (check.result === 'yes') {
+                    // The first two checks are emergency and crisis checks.
+                    return el('span', 'check-result ' + (index < 2 ? 'check-yes-urgent' : 'check-yes'), 'Yes');
+                }
+                if (check.result === 'no') { return el('span', 'check-result check-no', 'No'); }
+                return el('span', 'check-result check-skipped', 'Skipped');
+            }
+
+            function renderChecks(data, story) {
+                root.querySelector('[data-panel="2"] h3').textContent = 'Step 2: What NextStep checks for ' + data.name;
+                root.querySelector('.guided-story').textContent = story;
+
+                var list = root.querySelector('.check-list');
+                list.replaceChildren();
+                data.checks.forEach(function (check, index) {
+                    var item = el('li', check.result === 'skipped' ? 'is-skipped' : '');
+                    item.appendChild(el('span', 'check-q', (index + 1) + '. ' + check.question));
+                    item.appendChild(resultBadge(check, index));
+                    list.appendChild(item);
+                });
+
+                var skipped = data.checks.some(function (check) { return check.result === 'skipped'; });
+                var summary = 'Every check was “no”, so NextStep suggests anxiety-support tools.';
+                if (skipped) {
+                    summary = 'NextStep stopped at the first “yes”. The checks after it were skipped because a higher-priority step was already found.';
+                } else if (data.outcome === 'professional') {
+                    summary = 'No emergency or crisis signs were found, but this example should be checked by a healthcare professional soon.';
+                }
+                root.querySelector('.check-summary').textContent = summary;
+            }
+
+            function renderOutcome(data) {
+                var box = root.querySelector('.outcome');
+                box.className = 'outcome outcome-' + data.outcome;
+                box.querySelector('.result-label').textContent = data.override
+                    ? '⚠ Safety override: emergency guidance comes first'
+                    : 'Suggested next step';
+                box.querySelector('.outcome-title').textContent = data.label;
+                box.querySelector('.outcome-guidance').textContent = data.guidance;
+
+                var action = box.querySelector('.outcome-action');
+                action.replaceChildren();
+                action.hidden = true;
+                if (data.outcome === 'emergency' || data.outcome === 'crisis') {
+                    var call = el('a', 'btn ' + (data.outcome === 'emergency' ? 'btn-alert' : 'btn-violet'),
+                        data.outcome === 'emergency' ? 'Call 911' : 'Call or text 988');
+                    call.href = data.outcome === 'emergency' ? 'tel:911' : 'tel:988';
+                    action.appendChild(call);
+                    action.hidden = false;
+                }
+
+                var reasons = root.querySelector('.why .feature-list');
+                reasons.replaceChildren();
+                data.reasons.forEach(function (reason) { reasons.appendChild(el('li', '', reason)); });
+
+                root.querySelector('.guided-logged').textContent = data.logged
+                    ? 'Logged on the server: a timestamp, example ID “' + data.scenario_id + '”, and category “' + data.override_category + '”. Nothing else was recorded.'
+                    : 'No safety override in this example, so nothing was logged.';
+            }
+
+            people.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var story = button.querySelector('.person-story').textContent;
+                    errorBox.hidden = true;
+                    people.forEach(function (b) { b.disabled = true; });
+
+                    fetch(button.dataset.url, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                        credentials: 'same-origin'
+                    })
+                        .then(function (response) {
+                            if (!response.ok) { throw new Error('Request failed'); }
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            current = data;
+                            renderChecks(data, story);
+                            show(2);
+                        })
+                        .catch(function () {
+                            errorBox.textContent = 'This example could not be loaded. Please refresh the page and try again.';
+                            errorBox.hidden = false;
+                        })
+                        .finally(function () {
+                            people.forEach(function (b) { b.disabled = false; });
+                        });
+                });
+            });
+
+            root.querySelectorAll('[data-action="result"]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    if (!current) { return; }
+                    renderOutcome(current);
+                    show(3);
+                });
+            });
+
+            root.querySelectorAll('[data-action="restart"]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    current = null;
+                    show(1);
                 });
             });
         })();

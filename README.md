@@ -31,6 +31,32 @@ These phone numbers are for the United States.
 - Poisoning or possible medication overdose: Call Poison Control at 1-800-222-1222.
 - If someone is unconscious, having trouble breathing, or experiencing an immediate emergency, call 911.
 
+## Guided Walkthrough
+
+The homepage includes a three-step guided walkthrough, labeled "Walk through an example," that shows how NextStep is designed to choose a safe next step. It is an educational demonstration only. It uses four fictional, predefined examples, no AI is involved, and visitors are never asked about their own health. The page has no text boxes or forms, so visitors cannot enter symptoms or personal health information.
+
+1. **Choose an example.** The visitor selects one of four fictional people: Maya, Jordan, Sam, or Alex.
+2. **See the safety checks.** NextStep answers three questions in a fixed order. The answers are fixed for each example, and the visitor does not answer them.
+   1. Are there emergency warning signs?
+   2. Are there crisis or safety concerns?
+   3. Does this need a healthcare professional soon?
+
+   The first "yes" decides the next step, and any remaining checks are marked as skipped.
+3. **Receive a next step.** The result explains which step was chosen and why. Every result also shows the safety disclaimer and the emergency phone numbers (911, 988, and Poison Control).
+
+| Fictional example | Situation | Next step | Safety override |
+| --- | --- | --- | --- |
+| Maya (`guided-maya-headache`) | A mild headache after a long day of studying, with repeated symptom checking online | Try anxiety-support tools | None |
+| Jordan (`guided-jordan-cough`) | A cough that has lasted three weeks, with no warning signs | Contact a healthcare professional soon | None |
+| Sam (`guided-sam-chest-pressure`) | Sudden chest pressure with sweating and shortness of breath | Call 911 now | `medical_emergency` |
+| Alex (`guided-alex-hopeless`) | Feeling hopeless, with thoughts of not wanting to be alive | Call or text 988 now | `mental_health_crisis` |
+
+**Emergencies come first.** Emergency warning signs are always checked first, followed by crisis concerns. When either is present, emergency or crisis guidance takes priority over ordinary anxiety-support advice, and the later checks are skipped. The 911 and 988 wording is shared with the Safety Override Demonstration below, so both demonstrations always give the same emergency guidance. Even when no warning signs are found, the result reminds visitors that this does not guarantee a symptom is harmless.
+
+**Logging.** When a visitor selects Sam or Alex, the safety override is logged on the server at the moment the example is selected. Each log entry uses the same format and file as the Safety Override Demonstration (see [Override logging](#override-logging)): a timestamp, the predefined example ID, and the override category only. Maya and Jordan do not trigger an override, so nothing is logged for them.
+
+The examples are defined in `config/guided_demo.php`, the decision rule is in `app/Safety/NextStepDecider.php`, the server endpoint is in `app/Http/Controllers/GuidedDemoController.php`, and the tests are in `tests/Feature/GuidedDemoDecisionTest.php`, `tests/Feature/GuidedDemoEndpointTest.php`, and `tests/Feature/GuidedDemoPageTest.php`.
+
 ## Safety Override Demonstration
 
 The homepage includes a small, clearly labeled safety override demonstration. It is a demonstration, not a working AI symptom checker. It uses four fictional, predefined examples. Visitors cannot type anything in, and no AI is involved.
@@ -81,6 +107,6 @@ Visitors connect to the live website over HTTPS through CloudFront. The connecti
 5. Open `http://127.0.0.1:8000` in your browser.
 
 ## Current Status
-NextStep is currently in development and the website is a Coming Soon page. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, and the safety override demonstration. The AI features are not built yet.
+NextStep is currently in development and the website is a Coming Soon page. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, the guided walkthrough, and the safety override demonstration. The AI features are not built yet.
 
 Reagan O'Mara, CUA Busch School AI Vibe Coding Contest, Fall 2026

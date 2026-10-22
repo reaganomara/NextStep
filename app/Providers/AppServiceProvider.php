@@ -26,5 +26,11 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('safety-demo', function () {
             return Limit::perMinute(60)->by('safety-demo');
         });
+
+        // The guided examples get their own shared limit, so heavy use of
+        // one demonstration never blocks the other.
+        RateLimiter::for('guided-demo', function () {
+            return Limit::perMinute(60)->by('guided-demo');
+        });
     }
 }
