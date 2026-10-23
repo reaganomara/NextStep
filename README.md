@@ -127,6 +127,18 @@ No AI chatbot has been built yet, and visitors still cannot type anything. The A
 
 Visitors connect to the live website over HTTPS through CloudFront. The connection from CloudFront to the Elastic Beanstalk server still uses HTTP, so the site is **not yet encrypted end to end**. Securing that connection is required before NextStep adds real AI features or collects any personal health information.
 
+### CloudFront-only access (origin verification)
+
+Visitors should only reach NextStep through CloudFront. CloudFront can add a secret `X-Origin-Verify` header to every request it sends to the server. When `ORIGIN_VERIFY_SECRET` is set, NextStep refuses any request without that header (a plain `403 Forbidden`, with no cookies), so the Elastic Beanstalk address can't be used to skip CloudFront. CloudFront overwrites the header if a visitor tries to send their own.
+
+- It is **off** until `ORIGIN_VERIFY_SECRET` is set. Leave it empty locally.
+- In production, set it only in the Elastic Beanstalk console, and only **after** CloudFront is already sending the header.
+- `ORIGIN_VERIFY_SECRET_PREVIOUS` lets the old value keep working while the secret is being changed.
+- The health check at `/up` works without the header.
+- The header still travels over the unencrypted CloudFront-to-server link, so this is not a replacement for HTTPS on that link.
+
+The check is in `app/Http/Middleware/VerifyOriginHeader.php`, its settings are in `config/origin.php`, and the tests are in `tests/Feature/OriginVerifyTest.php`.
+
 Every response also sends standard browser security headers (`app/Http/Middleware/SecurityHeaders.php`): a content security policy that only allows the site's own content and its two nonce-tagged scripts, protection against being embedded in other sites, `nosniff`, a referrer policy, a permissions policy that turns off camera, microphone, and location, and, in production, a header telling browsers to always use HTTPS.
 
 ## Running NextStep Locally

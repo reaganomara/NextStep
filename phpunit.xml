@@ -22,6 +22,8 @@
         <!-- Tests never call the real AI: no key, feature off by default. -->
         <env name="GROQ_API_KEY" value="" force="true"/>
         <env name="AI_DEMO_ENABLED" value="false" force="true"/>
+        <env name="ORIGIN_VERIFY_SECRET" value="" force="true"/>
+        <env name="ORIGIN_VERIFY_SECRET_PREVIOUS" value="" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
