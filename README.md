@@ -16,7 +16,7 @@ NextStep is designed for people who experience health anxiety and want a calmer,
 
 ## What the AI Will Do (Planned)
 
-The only AI feature so far is a small, optional proof of concept (see [AI Explanation Demonstration](#ai-explanation-demonstration-proof-of-concept)). The plan is for the AI to focus on one main question: "What should I do right now?" Instead of diagnosing a user or providing a long list of possible illnesses, the AI will ask a small number of safety-focused questions and guide the user toward an appropriate next step. When emergency warning signs are not identified, NextStep will also guide users toward strategies to help manage anxiety and reduce repeated symptom checking.
+The only AI feature so far is a small, optional proof of concept that is now working on the live website (see [AI Explanation Demonstration](#ai-explanation-demonstration-proof-of-concept)). The plan is for the AI to focus on one main question: "What should I do right now?" Instead of diagnosing a user or providing a long list of possible illnesses, the AI will ask a small number of safety-focused questions and guide the user toward an appropriate next step. When emergency warning signs are not identified, NextStep will also guide users toward strategies to help manage anxiety and reduce repeated symptom checking.
 
 ## Safety Disclaimer
 
@@ -59,23 +59,51 @@ The examples are defined in `config/guided_demo.php`, the decision rule is in `a
 
 ## AI Explanation Demonstration (Proof of Concept)
 
-Step 3 of the guided walkthrough has an optional "Explain this step with AI" button. It is NextStep's first AI interaction and it is **off by default**.
+Step 3 of the guided walkthrough has an optional "Explain this step with AI" button. It is NextStep's first AI interaction.
 
-**How it works**
+**Status: working on the live website.** The AI explanation is switched on at https://dvh5yx5o2vs21.cloudfront.net and uses [Groq](https://groq.com) with the `openai/gpt-oss-20b` model, which is available on Groq's free plan. In the code it is still **off by default**: it only runs where `AI_DEMO_ENABLED=true` and a Groq API key are set, as they are on the live server.
+
+**The four fictional examples**
+
+| Fictional example | Next step chosen by the safety rules | Uses AI? |
+| --- | --- | --- |
+| Maya: mild headache after studying, with repeated symptom checking | Try anxiety-support tools | Yes, AI explains the chosen step |
+| Jordan: a cough that has lasted three weeks, with no warning signs | Contact a healthcare professional soon | Yes, AI explains the chosen step |
+| Sam: sudden chest pressure, sweating, and shortness of breath | Call 911 now | **Never.** Fixed emergency guidance only |
+| Alex: feeling hopeless, with thoughts of not wanting to be alive | Call or text 988 now | **Never.** Fixed crisis guidance only |
+
+**Safety rules run before AI**
 
 1. The visitor picks a fictional example. Only its ID is sent to the server, never anything the visitor types.
-2. The server runs the same safety rules as the guided walkthrough (`NextStepDecider`) **before** anything else.
-3. **Emergency (Sam) and crisis (Alex) examples never reach the AI.** They get the fixed 911 or 988 guidance and the override is logged in the usual three-field format. The AI code also refuses these outcomes on its own as a second check.
-4. For Maya and Jordan only, the server asks Groq's `openai/gpt-oss-20b` model (available on Groq's free plan) to explain the step that was already chosen, in 2–3 calm sentences. The prompt is built only from the predefined example in `config/guided_demo.php`. The AI cannot change the step, and the fixed next step, disclaimer and emergency numbers stay on screen.
-5. Every reply, new or saved, must pass a safety filter before it is shown. Replies that diagnose or name conditions, mention medication, falsely reassure (for example "nothing to worry about" or "doesn't need to see a doctor"), or include links or phone numbers are discarded. The filter is in `config/ai_demo.php`.
-6. If the AI is switched off, has no key, reaches its daily limit, errors, times out, is rate limited, or returns an empty, cut-off, overlong, or filtered answer, the page says so and the fixed next step still applies.
+2. The server runs the same safety rules as the guided walkthrough (`NextStepDecider`) **before** anything else. The rules, not the AI, choose the next step.
+3. **Emergency (Sam) and crisis (Alex) examples never reach the AI.** The server returns the fixed 911 or 988 guidance before any AI code runs, and the override is logged in the usual three-field format. The AI code also refuses these outcomes on its own as a second check, and the page hides the AI button for them.
+4. For Maya and Jordan only, the server asks the AI to explain the step that was already chosen, in 2–3 calm sentences. The prompt is built only from the predefined example in `config/guided_demo.php`. The AI cannot change the step, and the fixed next step, disclaimer, and emergency numbers stay on screen directly below the explanation.
+5. Every reply, new or saved, must pass a safety filter before it is shown. Replies that diagnose or name conditions, mention medication, falsely reassure (for example "nothing to worry about" or "doesn't need to see a doctor"), or include links or numbers of three or more digits are discarded. The filter is in `config/ai_demo.php`.
 
-**Cost limits**
+**Daily limit**
 
-- Off unless `AI_DEMO_ENABLED=true`.
-- Each answer is saved for 24 hours. The examples never change, so the AI is called at most about twice a day.
-- A daily cap (`AI_DEMO_DAILY_LIMIT`, default 50 calls), a shared rate limit (20 requests a minute), answers capped at 1,024 tokens, a low temperature (0.2) for predictable replies, and a 15-second timeout.
-- Use Groq's free plan with no payment method on file. Groq's own free-plan rate limits are a final backstop: when they are reached, Groq returns an error and the page shows the fixed guidance.
+- The server allows up to 50 AI calls per day (UTC) by default, set with `AI_DEMO_DAILY_LIMIT`.
+- Every request that reaches Groq counts, including ones that fail or are filtered. Showing a saved answer does not count.
+- When the limit is reached, the page says "The AI explanation has reached its daily limit" and the fixed next step still applies. The count starts again the next day.
+- All visitors also share a limit of 20 AI requests a minute. Above it, the page says the AI explanation could not be loaded.
+- Groq's own free-plan limits are a final backstop. Use the free plan with no payment method on file.
+
+**Caching (saved answers)**
+
+- A reply that passes the filter is saved on the server for 24 hours, separately for Maya and Jordan. Everyone who asks during that time sees the same saved reply, and Groq is not called again.
+- Saved replies are checked against the filter again every time they are shown.
+- Failed or filtered replies are never saved, so the next click asks Groq again.
+- Saved replies are stored in the server's file cache, so a new deployment may clear them.
+
+**Occasional failed responses**
+
+The AI words its reply a little differently each time. Most replies pass the filter, but sometimes one uses a blocked word (for example "condition" or "infection") and is discarded. Calls can also fail when Groq returns an error or rate limit, takes longer than 15 seconds, or sends an empty, cut-off, or overlong answer (over 1,000 characters).
+
+In each of these cases the page shows "The AI explanation is not available right now. The next step above was chosen by NextStep's safety rules and still applies." This is the intended safe fallback, not a safety failure: nothing unfiltered is shown, and the next step does not change. Trying again usually works, and a successful reply is then saved for 24 hours.
+
+**Other cost settings**
+
+Answers are capped at 1,024 tokens (including the model's hidden reasoning), the temperature is low (0.2) for more predictable replies, and there are no automatic retries.
 
 **API key**
 
@@ -150,6 +178,6 @@ Every response also sends standard browser security headers (`app/Http/Middlewar
 5. Open `http://127.0.0.1:8000` in your browser.
 
 ## Current Status
-NextStep is currently in development and the website is a Coming Soon page. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, the guided walkthrough, and the safety override demonstration. The only AI feature is the optional AI explanation proof of concept, which is off by default.
+NextStep is currently in development and the website is a Coming Soon page. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, the guided walkthrough, and the safety override demonstration. The only AI feature is the optional AI explanation proof of concept, which is working on the live website using Groq for the Maya and Jordan examples. Sam and Alex never use AI. The site is not yet encrypted end to end (see [HTTPS](#https)).
 
 Reagan O'Mara, CUA Busch School AI Vibe Coding Contest, Fall 2026
