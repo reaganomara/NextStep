@@ -27,7 +27,8 @@ class GuidedDemoPageTest extends TestCase
 
         $this->assertStringContainsString('Walk through an example', $section);
         $this->assertStringContainsString('Demonstration only', $section);
-        $this->assertStringContainsString('You will not be asked anything about yourself, nothing you type is collected, and no AI is used.', $section);
+        $this->assertStringContainsString('You will not be asked anything about yourself and nothing you type is collected.', $section);
+        $this->assertStringContainsString('The safety checks never use AI.', $section);
 
         foreach (['Step 1: Choose a fictional example', 'Step 2: What NextStep checks, in order', 'Step 3: The next step'] as $heading) {
             $this->assertStringContainsString($heading, $section);

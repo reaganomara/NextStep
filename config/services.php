@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Server-side only. Set GROQ_API_KEY in .env (local) or in the
+    // Elastic Beanstalk console (production). Never commit it.
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

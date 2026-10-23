@@ -884,6 +884,28 @@
 
         .mini-emergency a { color: var(--alert-700); font-weight: 700; }
 
+        .ai-box {
+            background: var(--neutral-100);
+            border: 1px dashed var(--neutral-500);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .ai-box h4 { font-size: 1rem; color: var(--blue-900); margin: 0 0 0.25rem; }
+
+        .ai-box p { max-width: none; }
+
+        .ai-box p:last-child { margin-bottom: 0; }
+
+        .ai-box [hidden] { display: none; }
+
+        .ai-label { font-size: 0.85rem; font-weight: 700; color: var(--neutral-700); margin: 0.75rem 0 0.25rem; }
+
+        .ai-text { background: var(--white); border-radius: var(--radius-sm); padding: 0.75rem 1rem; }
+
+        .ai-note { font-size: 0.95rem; color: var(--neutral-700); margin-top: 0.75rem; }
+
         .guided-error {
             background: var(--alert-100);
             border: 1px solid var(--alert-700);
@@ -1137,7 +1159,8 @@
                     <h2 id="guided-heading">Walk through an example</h2>
                     <p>
                         See how NextStep would choose a safe next step. Pick one of the fictional people below.
-                        You will not be asked anything about yourself, nothing you type is collected, and no AI is used.
+                        You will not be asked anything about yourself and nothing you type is collected.
+                        The safety checks never use AI. For non-emergency examples, you can ask for an optional, clearly labeled AI explanation of the step NextStep chose.
                     </p>
 
                     <ol class="stepper" aria-label="Progress">
@@ -1150,7 +1173,7 @@
                         <h3 tabindex="-1">Step 1: Choose a fictional example</h3>
                         <div class="person-grid">
                             @foreach (config('guided_demo.scenarios') as $id => $guided)
-                                <button type="button" class="person" data-url="{{ route('guided-demo.run', $id, false) }}">
+                                <button type="button" class="person" data-url="{{ route('guided-demo.run', $id, false) }}" data-ai-url="{{ route('ai-demo.run', $id, false) }}">
                                     <span class="avatar" aria-hidden="true">{{ mb_substr($guided['name'], 0, 1) }}</span>
                                     <span>
                                         <span class="person-name">{{ $guided['name'] }} <span class="fictional">Fictional</span></span>
@@ -1188,6 +1211,14 @@
                         <div class="why">
                             <h4>Why this step</h4>
                             <ul class="feature-list"></ul>
+                        </div>
+                        <div class="ai-box">
+                            <h4>Optional: AI explanation</h4>
+                            <p class="ai-intro">NextStep’s safety rules chose the step above. AI can explain it in plain language, but it cannot change it.</p>
+                            <button type="button" class="run" data-action="ai">Explain this step with AI</button>
+                            <p class="ai-label" hidden></p>
+                            <p class="ai-text" hidden></p>
+                            <p class="ai-note" hidden></p>
                         </div>
                         <div class="result-box logged guided-logged"></div>
                         <div class="guided-safety">
@@ -1437,6 +1468,9 @@
             var errorBox = root.querySelector('.guided-error');
             var status = root.querySelector('.guided-status');
             var current = null;
+            var currentAiUrl = null;
+            var aiBox = root.querySelector('.ai-box');
+            var aiButton = aiBox.querySelector('[data-action="ai"]');
 
             function el(tag, className, text) {
                 var node = document.createElement(tag);
@@ -1517,13 +1551,74 @@
                 reasons.replaceChildren();
                 data.reasons.forEach(function (reason) { reasons.appendChild(el('li', '', reason)); });
 
+                resetAi(data);
+
                 root.querySelector('.guided-logged').textContent = data.logged
                     ? 'Logged on the server: a timestamp, example ID “' + data.scenario_id + '”, and category “' + data.override_category + '”. Nothing else was recorded.'
                     : 'No safety override in this example, so nothing was logged.';
             }
 
+            function aiMessage(text) {
+                var note = aiBox.querySelector('.ai-note');
+                note.textContent = text;
+                note.hidden = false;
+            }
+
+            // The server enforces the same rule; hiding the button is only for clarity.
+            function resetAi(data) {
+                aiBox.querySelector('.ai-label').hidden = true;
+                aiBox.querySelector('.ai-text').hidden = true;
+                aiBox.querySelector('.ai-note').hidden = true;
+                aiButton.disabled = false;
+                aiButton.textContent = 'Explain this step with AI';
+
+                var urgent = data.outcome === 'emergency' || data.outcome === 'crisis';
+                aiButton.hidden = urgent;
+                aiBox.querySelector('.ai-intro').hidden = urgent;
+                if (urgent) {
+                    aiMessage('AI is never used for emergency or crisis examples. Follow the guidance above.');
+                }
+            }
+
+            aiButton.addEventListener('click', function () {
+                if (!currentAiUrl) { return; }
+                aiButton.disabled = true;
+                aiButton.textContent = 'Asking AI…';
+                aiBox.querySelector('.ai-note').hidden = true;
+
+                fetch(currentAiUrl, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                })
+                    .then(function (response) {
+                        if (!response.ok) { throw new Error('Request failed'); }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (data.ai_used) {
+                            var label = aiBox.querySelector('.ai-label');
+                            label.textContent = 'Written by AI (' + data.model + ' on ' + data.provider + ') for this fictional example. It does not replace the next step above.';
+                            label.hidden = false;
+                            var text = aiBox.querySelector('.ai-text');
+                            text.textContent = data.explanation;
+                            text.hidden = false;
+                            aiButton.hidden = true;
+                        } else {
+                            aiMessage(data.message);
+                            aiButton.hidden = true;
+                        }
+                    })
+                    .catch(function () {
+                        aiMessage('The AI explanation could not be loaded. The next step above still applies.');
+                        aiButton.disabled = false;
+                        aiButton.textContent = 'Explain this step with AI';
+                    });
+            });
+
             people.forEach(function (button) {
                 button.addEventListener('click', function () {
+                    currentAiUrl = button.dataset.aiUrl;
                     var story = button.querySelector('.person-story').textContent;
                     errorBox.hidden = true;
                     people.forEach(function (b) { b.disabled = true; });

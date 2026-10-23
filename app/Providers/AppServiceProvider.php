@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Ai\GroqTextGenerator;
+use App\Ai\TextGenerator;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -13,7 +15,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(TextGenerator::class, fn () => new GroqTextGenerator(
+            apiKey: (string) config('services.groq.key'),
+            model: config('ai_demo.model'),
+            maxTokens: config('ai_demo.max_tokens'),
+            timeoutSeconds: config('ai_demo.timeout_seconds'),
+        ));
     }
 
     /**
@@ -31,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
         // one demonstration never blocks the other.
         RateLimiter::for('guided-demo', function () {
             return Limit::perMinute(60)->by('guided-demo');
+        });
+
+        // A lower shared limit for the AI explanation. The daily limit in
+        // config/ai_demo.php is the main cost guard.
+        RateLimiter::for('ai-demo', function () {
+            return Limit::perMinute(20)->by('ai-demo');
         });
     }
 }
