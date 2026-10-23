@@ -7,6 +7,7 @@ use App\Ai\NextStepExplainer;
 use App\Ai\TextGenerator;
 use App\Safety\NextStepDecider;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Tests\TestCase;
@@ -134,7 +135,7 @@ class AiDemoTest extends TestCase
 
     private function groq(string $key = 'test-placeholder-key'): GroqTextGenerator
     {
-        return new GroqTextGenerator(apiKey: $key, model: 'openai/gpt-oss-20b', maxTokens: 1024, timeoutSeconds: 15);
+        return new GroqTextGenerator(apiKey: $key, model: 'openai/gpt-oss-20b', maxTokens: 1024, timeoutSeconds: 15, temperature: 0.2);
     }
 
     /** @return array<string, mixed> */
@@ -173,6 +174,7 @@ class AiDemoTest extends TestCase
                 && $request['model'] === 'openai/gpt-oss-20b'
                 && $request['max_completion_tokens'] === 1024
                 && $request['reasoning_effort'] === 'low'
+                && $request['temperature'] === 0.2
                 && $request['include_reasoning'] === false
                 && $request['messages'] === [
                     ['role' => 'system', 'content' => 'SYSTEM TEXT'],
@@ -384,6 +386,86 @@ class AiDemoTest extends TestCase
                 ->assertOk()
                 ->assertJson(['ai_used' => false, 'ai_status' => 'error', 'explanation' => null]);
         }
+    }
+
+    // --- Reply safety filter -----------------------------------------------
+
+    public function test_unsafe_replies_are_filtered_and_never_shown_or_saved(): void
+    {
+        $this->enableAi();
+
+        $unsafe = [
+            'This sounds like a migraine, so Maya should rest.',
+            'Jordan may have bronchitis and should see a doctor.',
+            'Maya could take ibuprofen to ease the headache.',
+            'The cough is probably nothing to worry about.',
+            'Maya’s headache is harmless, so she can relax.',
+            'Jordan doesn’t need to see a doctor right away.',
+            'This is just anxiety, so breathing exercises will help.',
+            'Call 555-0100 to speak with a nurse.',
+            'Read more at www.example.com before deciding.',
+            'A doctor can diagnose what is causing the cough.',
+        ];
+
+        foreach ($unsafe as $reply) {
+            Cache::flush();
+            $this->useFake(new FakeTextGenerator(reply: $reply));
+
+            $response = $this->postJson('/ai-demo/'.self::JORDAN)
+                ->assertOk()
+                ->assertJson(['ai_used' => false, 'ai_status' => 'filtered', 'explanation' => null])
+                ->assertJsonPath('message', 'The AI explanation is not available right now. The next step above was chosen by NextStep’s safety rules and still applies.');
+
+            $this->assertStringNotContainsString($reply, $response->getContent(), $reply);
+            $this->assertCount(1, $this->fake->calls);
+
+            // Nothing unsafe is saved for the next visitor.
+            $this->useFake(new FakeTextGenerator(reply: 'A calm, fictional explanation.'));
+            $this->postJson('/ai-demo/'.self::JORDAN)->assertJsonPath('ai_status', 'ok');
+        }
+    }
+
+    public function test_the_first_real_groq_reply_passes_the_filter(): void
+    {
+        $realReply = 'Maya’s headache is mild and the situation doesn’t show any urgent warning signs, so using anxiety‑support tools can help her feel calmer without delaying care. A slow breathing exercise can reduce the worry that comes from repeatedly checking symptoms, and setting the symptom search aside for now can prevent her anxiety from escalating. If the headache persists or she feels more concerned, she can then seek professional advice.';
+
+        $this->assertNull($this->app->make(NextStepExplainer::class)->blockedBy($realReply));
+    }
+
+    public function test_filter_matches_whole_words_only(): void
+    {
+        $explainer = $this->app->make(NextStepExplainer::class);
+
+        $this->assertSame('flu', $explainer->blockedBy('It could be the flu.'));
+        $this->assertSame('tumor', $explainer->blockedBy('Worried about tumors.'));
+        $this->assertSame('diagnos*', $explainer->blockedBy('She was diagnosed.'));
+        foreach ([
+            "Jordan doesn't need to see a doctor.",
+            'Jordan does not need to visit a clinic.',
+            'Maya won’t need to call anyone.',
+            'There is no need to see a professional.',
+            "Maya shouldn't worry about this.",
+            'Maya does not need to worry.',
+        ] as $reassurance) {
+            $this->assertNotNull($explainer->blockedBy($reassurance), $reassurance);
+        }
+
+        $this->assertNull($explainer->blockedBy('Drinking fluids and resting can help her feel calmer.'));
+        $this->assertNull($explainer->blockedBy('If the cough continues, Jordan should contact a healthcare professional.'));
+        $this->assertNull($explainer->blockedBy('Jordan can book an appointment with a healthcare professional.'));
+    }
+
+    public function test_an_unsafe_saved_reply_is_removed_instead_of_shown(): void
+    {
+        $this->enableAi();
+        Cache::put('ai-demo:explanation:'.self::MAYA.':openai/gpt-oss-20b', 'Take two pills of aspirin.', now()->addHour());
+
+        $this->postJson('/ai-demo/'.self::MAYA)
+            ->assertOk()
+            ->assertJson(['ai_used' => false, 'ai_status' => 'filtered', 'explanation' => null]);
+
+        $this->assertNull(Cache::get('ai-demo:explanation:'.self::MAYA.':openai/gpt-oss-20b'));
+        $this->assertCount(0, $this->fake->calls);
     }
 
     // --- Requests and secrets -----------------------------------------------

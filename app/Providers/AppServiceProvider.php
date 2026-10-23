@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
             model: config('ai_demo.model'),
             maxTokens: config('ai_demo.max_tokens'),
             timeoutSeconds: config('ai_demo.timeout_seconds'),
+            temperature: config('ai_demo.temperature'),
         ));
     }
 

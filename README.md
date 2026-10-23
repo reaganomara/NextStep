@@ -67,13 +67,14 @@ Step 3 of the guided walkthrough has an optional "Explain this step with AI" but
 2. The server runs the same safety rules as the guided walkthrough (`NextStepDecider`) **before** anything else.
 3. **Emergency (Sam) and crisis (Alex) examples never reach the AI.** They get the fixed 911 or 988 guidance and the override is logged in the usual three-field format. The AI code also refuses these outcomes on its own as a second check.
 4. For Maya and Jordan only, the server asks Groq's `openai/gpt-oss-20b` model (available on Groq's free plan) to explain the step that was already chosen, in 2–3 calm sentences. The prompt is built only from the predefined example in `config/guided_demo.php`. The AI cannot change the step, and the fixed next step, disclaimer and emergency numbers stay on screen.
-5. If the AI is switched off, has no key, reaches its daily limit, errors, times out, is rate limited, or returns an empty, cut-off, or overlong answer, the page says so and the fixed next step still applies.
+5. Every reply, new or saved, must pass a safety filter before it is shown. Replies that diagnose or name conditions, mention medication, falsely reassure (for example "nothing to worry about" or "doesn't need to see a doctor"), or include links or phone numbers are discarded. The filter is in `config/ai_demo.php`.
+6. If the AI is switched off, has no key, reaches its daily limit, errors, times out, is rate limited, or returns an empty, cut-off, overlong, or filtered answer, the page says so and the fixed next step still applies.
 
 **Cost limits**
 
 - Off unless `AI_DEMO_ENABLED=true`.
 - Each answer is saved for 24 hours. The examples never change, so the AI is called at most about twice a day.
-- A daily cap (`AI_DEMO_DAILY_LIMIT`, default 50 calls), a shared rate limit (20 requests a minute), answers capped at 1,024 tokens, and a 15-second timeout.
+- A daily cap (`AI_DEMO_DAILY_LIMIT`, default 50 calls), a shared rate limit (20 requests a minute), answers capped at 1,024 tokens, a low temperature (0.2) for predictable replies, and a 15-second timeout.
 - Use Groq's free plan with no payment method on file. Groq's own free-plan rate limits are a final backstop: when they are reached, Groq returns an error and the page shows the fixed guidance.
 
 **API key**
@@ -125,6 +126,8 @@ No AI chatbot has been built yet, and visitors still cannot type anything. The A
 ## HTTPS
 
 Visitors connect to the live website over HTTPS through CloudFront. The connection from CloudFront to the Elastic Beanstalk server still uses HTTP, so the site is **not yet encrypted end to end**. Securing that connection is required before NextStep adds real AI features or collects any personal health information.
+
+Every response also sends standard browser security headers (`app/Http/Middleware/SecurityHeaders.php`): a content security policy that only allows the site's own content and its two nonce-tagged scripts, protection against being embedded in other sites, `nosniff`, a referrer policy, a permissions policy that turns off camera, microphone, and location, and, in production, a header telling browsers to always use HTTPS.
 
 ## Running NextStep Locally
 

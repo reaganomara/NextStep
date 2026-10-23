@@ -1368,7 +1368,7 @@
         </div>
     </footer>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         (function () {
             var token = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -1456,7 +1456,7 @@
         })();
     </script>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         // Guided walkthrough: visitors only choose a predefined fictional example.
         // All text is inserted with textContent, never as HTML.
         (function () {

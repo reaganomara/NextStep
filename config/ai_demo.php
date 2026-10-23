@@ -37,8 +37,46 @@ return [
     'daily_limit' => (int) env('AI_DEMO_DAILY_LIMIT', 50),
     'cache_hours' => 24,
 
+    // Lower values make replies more predictable.
+    'temperature' => 0.2,
+
     // Longer answers are discarded and the fixed guidance is used instead.
     'max_characters' => 1000,
+
+    // Replies containing any of these are discarded and the fixed guidance
+    // is shown instead. Matching ignores case. Terms match whole words
+    // (plurals included); a trailing * matches any word starting with it,
+    // so "diagnos*" catches "diagnosis" and "diagnosed".
+    // Erring on the side of blocking is safe: the fallback is always safe.
+    'blocked_terms' => [
+        // Diagnosing or naming conditions
+        'diagnos*', 'condition', 'disease', 'illness', 'disorder', 'syndrome',
+        'cancer', 'tumor', 'tumour', 'stroke', 'heart attack', 'aneurysm',
+        'meningitis', 'migraine', 'infection', 'pneumonia', 'tuberculosis',
+        'bronchitis', 'asthma', 'covid', 'flu', 'allerg*', 'panic attack',
+        'panic disorder', 'hypochondria',
+
+        // Medication and doses
+        'medication', 'medicine', 'drug', 'dose', 'dosage', 'pill', 'tablet',
+        'ibuprofen', 'acetaminophen', 'paracetamol', 'tylenol', 'advil',
+        'aspirin', 'antibiotic', 'prescri*', 'supplement',
+
+        // False reassurance
+        'harmless', 'nothing to worry', 'nothing serious', 'not serious',
+        'nothing wrong', 'definitely fine', 'perfectly fine', 'just anxiety',
+        'only anxiety', 'just stress', 'guarantee', 'certainly', 'no need to worry',
+    ],
+
+    // Also blocked: links; numbers of 3 or more digits (for example made-up
+    // phone numbers, since the page already shows the correct ones); and
+    // telling the reader they don't need care or don't need to worry, in
+    // any form (don't, doesn't, won't, does not, no need...).
+    'blocked_patterns' => [
+        '/https?:|www\./i',
+        '/\d{3,}/',
+        "/\b(?:(?:do|does|did|will|would|should)\s*(?:n't|not)|won't|no)\s+(?:need|have)\s+to\s+(?:see|visit|contact|call|go|worry|be\s+worried)\b/i",
+        "/\b(?:do|does|should)\s*(?:n't|not)\s+(?:need\s+to\s+)?worry\b/i",
+    ],
 
     'system_prompt' => <<<'PROMPT'
         You write short explanations for an educational demonstration about health anxiety. Every person you are told about is fictional.

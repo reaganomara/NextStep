@@ -12,6 +12,7 @@ use Throwable;
  *
  * Every check that could stop the AI call runs before it, in this order:
  * allowed outcome, switched on, key present, saved answer, daily limit.
+ * Every reply, new or saved, must pass the safety filter before it is shown.
  */
 class NextStepExplainer
 {
@@ -22,7 +23,8 @@ class NextStepExplainer
      * @return array{status: string, text: ?string}
      *
      * status is "ok" or "cached" when text is AI-written, and otherwise one
-     * of "blocked", "disabled", "not_configured", "daily_limit" or "error".
+     * of "blocked", "disabled", "not_configured", "daily_limit", "filtered"
+     * or "error".
      */
     public function explain(array $decision): array
     {
@@ -45,6 +47,12 @@ class NextStepExplainer
         $cacheKey = 'ai-demo:explanation:'.$decision['scenario_id'].':'.config('ai_demo.model');
         $saved = Cache::get($cacheKey);
         if (is_string($saved)) {
+            if ($this->blockedBy($saved) !== null) {
+                Cache::forget($cacheKey);
+
+                return ['status' => 'filtered', 'text' => null];
+            }
+
             return ['status' => 'cached', 'text' => $saved];
         }
 
@@ -67,9 +75,47 @@ class NextStepExplainer
             return ['status' => 'error', 'text' => null];
         }
 
+        $blocked = $this->blockedBy($text);
+        if ($blocked !== null) {
+            // Record only which rule matched, never the reply itself.
+            Log::warning('AI demo reply filtered: '.$blocked);
+
+            return ['status' => 'filtered', 'text' => null];
+        }
+
         Cache::put($cacheKey, $text, now()->addHours(config('ai_demo.cache_hours')));
 
         return ['status' => 'ok', 'text' => $text];
+    }
+
+    /**
+     * Return the blocked term or pattern the text matches, or null if the
+     * text is allowed.
+     */
+    public function blockedBy(string $text): ?string
+    {
+        // Treat curly apostrophes and special hyphens like plain ones.
+        $text = str_replace(["\u{2019}", "\u{2018}", "\u{2010}", "\u{2011}", "\u{2013}"], ["'", "'", '-', '-', '-'], $text);
+
+        foreach (config('ai_demo.blocked_terms') as $term) {
+            // "word*" matches any word starting with "word". Other terms
+            // match as whole words, with or without a plural ending.
+            $regex = str_ends_with($term, '*')
+                ? '/\b'.preg_quote(rtrim($term, '*'), '/').'/iu'
+                : '/\b'.preg_quote($term, '/').'(s|es)?\b/iu';
+
+            if (preg_match($regex, $text) === 1) {
+                return $term;
+            }
+        }
+
+        foreach (config('ai_demo.blocked_patterns') as $pattern) {
+            if (preg_match($pattern, $text) === 1) {
+                return $pattern;
+            }
+        }
+
+        return null;
     }
 
     /** Count this call toward today's limit and say whether it is allowed. */

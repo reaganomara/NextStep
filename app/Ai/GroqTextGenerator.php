@@ -17,6 +17,7 @@ class GroqTextGenerator implements TextGenerator
         private string $model,
         private int $maxTokens,
         private int $timeoutSeconds,
+        private float $temperature,
     ) {}
 
     public function generate(string $system, string $prompt): ?string
@@ -40,7 +41,7 @@ class GroqTextGenerator implements TextGenerator
                     ['role' => 'user', 'content' => $prompt],
                 ],
                 'max_completion_tokens' => $this->maxTokens,
-                'temperature' => 0.6,
+                'temperature' => $this->temperature,
                 'reasoning_effort' => 'low',
                 'include_reasoning' => false,
             ])
