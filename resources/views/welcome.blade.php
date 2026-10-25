@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="NextStep is an AI-powered app in development to help people experiencing health anxiety figure out their next step. Coming soon.">
+    <meta name="description" content="NextStep is an AI-powered app in development to help people experiencing health anxiety figure out their next step.AI explanations are live for fictional examples while the full app remains in development.">
     <meta name="theme-color" content="#1f5f8b">
     <title>NextStep | A calmer way to figure out your next step</title>
     <style>
@@ -1064,11 +1064,9 @@
         <div class="container">
             <h1>NextStep</h1>
             <p class="subtitle">A calmer way to figure out your next step.</p>
-            <div class="badge">Coming Soon</div>
+<div class="badge">AI Explanations Now Live</div>
             <p class="intro">
-                NextStep is an AI-powered app being developed to help people experiencing health anxiety
-                decide what to do when physical symptoms feel overwhelming.
-            </p>
+NextStep helps people experiencing health anxiety understand their next steps. AI-powered explanations are now live for fictional examples, while the full application remains in development.            </p>
             <p class="intro"><strong>NextStep will not diagnose medical conditions.</strong></p>
             <nav class="hero-actions" aria-label="On this page">
                 <a class="btn btn-light" href="#guided-demo">Walk through an example</a>
@@ -1359,9 +1357,8 @@
     <footer>
         <div class="container">
             <p class="footer-brand">NextStep</p>
-            <p>NextStep is in development. Coming soon.</p>
+<p>AI explanations are live for fictional examples. The full NextStep application remains in development.</p>
             <p>NextStep does not diagnose medical conditions or provide medical advice.</p>
-            <p>
                 In an emergency, call <a href="tel:911">911</a>. For a mental health crisis, call or text
                 <a href="tel:988">988</a>. Poison Control: <a href="tel:18002221222">1-800-222-1222</a>.
             </p>
