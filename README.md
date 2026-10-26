@@ -1,6 +1,6 @@
 # NextStep
 
-**Live website:** https://dvh5yx5o2vs21.cloudfront.net
+**Live website:** https://dbknfeuu0b0u9.cloudfront.net
 
 The NextStep Laravel app is hosted on AWS Elastic Beanstalk and served to visitors through Amazon CloudFront. Please use the HTTPS address above; the safety demonstrations do not work on the plain-HTTP Elastic Beanstalk address.
 
@@ -61,7 +61,7 @@ The examples are defined in `config/guided_demo.php`, the decision rule is in `a
 
 Step 3 of the guided walkthrough has an optional "Explain this step with AI" button. It is NextStep's first AI interaction.
 
-**Status: working on the live website.** The AI explanation is switched on at https://dvh5yx5o2vs21.cloudfront.net and uses [Groq](https://groq.com) with the `openai/gpt-oss-20b` model, which is available on Groq's free plan. In the code it is still **off by default**: it only runs where `AI_DEMO_ENABLED=true` and a Groq API key are set, as they are on the live server.
+**Status: working on the live website.** The AI explanation is switched on at https://dbknfeuu0b0u9.cloudfront.net and uses [Groq](https://groq.com) with the `openai/gpt-oss-20b` model, which is available on Groq's free plan. In the code it is still **off by default**: it only runs where `AI_DEMO_ENABLED=true` and a Groq API key are set, as they are on the live server.
 
 **The four fictional examples**
 
@@ -178,6 +178,6 @@ Every response also sends standard browser security headers (`app/Http/Middlewar
 5. Open `http://127.0.0.1:8000` in your browser.
 
 ## Current Status
-NextStep is currently in development and the website is a Coming Soon page. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, the guided walkthrough, and the safety override demonstration. The only AI feature is the optional AI explanation proof of concept, which is working on the live website using Groq for the Maya and Jordan examples. Sam and Alex never use AI. The site is not yet encrypted end to end (see [HTTPS](#https)).
+NextStep is currently in development, with a live guided walkthrough and working AI explanations for fictional examples. It includes information about health anxiety, the planned features, the safety disclaimer, emergency information, the guided walkthrough, and the safety override demonstration. The only AI feature is the optional AI explanation proof of concept, which is working on the live website using Groq for the Maya and Jordan examples. Sam and Alex never use AI. Visitors access NextStep through HTTPS using Amazon CloudFront.
 
 Reagan O'Mara, CUA Busch School AI Vibe Coding Contest, Fall 2026
