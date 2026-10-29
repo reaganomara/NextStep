@@ -43,7 +43,7 @@ class SecurityHeadersTest extends TestCase
 
         $html = $response->getContent();
         $this->assertSame(3, substr_count($html, '<script'));
-        $this->assertSame(2, substr_count($html, '<script nonce="'.$match[1].'">'));
+        $this->assertSame(3, substr_count($html, '<script nonce="'.$match[1].'">'));
 
         // Inline event handlers would be blocked by the policy.
         $this->assertSame(0, preg_match('/\son[a-z]+="/i', $html));
