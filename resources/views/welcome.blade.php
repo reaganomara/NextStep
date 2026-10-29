@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="NextStep is an AI-powered app in development to help people experiencing health anxiety figure out their next step.AI explanations are live for fictional examples while the full app remains in development.">
+    <meta name="description" content="NextStep is an AI-powered app in development to help people experiencing health anxiety figure out their next step. AI explanations are live for fictional examples while the full app remains in development.">
     <meta name="theme-color" content="#1f5f8b">
     <title>NextStep | A calmer way to figure out your next step</title>
     <style>

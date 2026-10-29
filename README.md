@@ -14,7 +14,7 @@ People with health anxiety can become overwhelmed when they notice a physical sy
 
 NextStep is designed for people who experience health anxiety and want a calmer, more structured way to decide their next step.
 
-## What the AI Will Do (Planned)
+## What the AI Does Now, and What Comes Next
 
 The only AI feature so far is a small, optional proof of concept that is now working on the live website (see [AI Explanation Demonstration](#ai-explanation-demonstration-proof-of-concept)). The plan is for the AI to focus on one main question: "What should I do right now?" Instead of diagnosing a user or providing a long list of possible illnesses, the AI will ask a small number of safety-focused questions and guide the user toward an appropriate next step. When emergency warning signs are not identified, NextStep will also guide users toward strategies to help manage anxiety and reduce repeated symptom checking.
 
