@@ -29,7 +29,7 @@ class SafetyDemoTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Coming Soon')
+            ->assertSee('AI-powered explanations are now live for fictional examples')
             ->assertSee('A calmer way to figure out your next step.')
             ->assertSee('Not identifying warning signs does not guarantee that a symptom is harmless.')
             ->assertSee('1-800-222-1222')

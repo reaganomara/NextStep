@@ -1218,7 +1218,19 @@ NextStep helps people experiencing health anxiety understand their next steps. A
                             <p class="ai-text" hidden></p>
                             <p class="ai-note" hidden></p>
                         </div>
-                        <div class="result-box logged guided-logged"></div>
+                        <div class="calming-exercise" style="margin:20px 0;padding:20px;border:1px solid #b9d9d5;border-radius:14px;background:#f0faf8;color:#173b46;">
+    <h4>Take a moment to ground yourself</h4>
+    <p>If you are feeling overwhelmed, try the 5-4-3-2-1 grounding exercise:</p>
+    <ol style="padding-left:24px;line-height:1.9;">
+        <li>Notice 5 things you can see.</li>
+        <li>Notice 4 things you can feel.</li>
+        <li>Notice 3 things you can hear.</li>
+        <li>Notice 2 things you can smell.</li>
+        <li>Notice 1 thing you can taste.</li>
+    </ol>
+    <p>This exercise can help you focus on the present moment. It does not replace medical care or emergency guidance.</p>
+</div>
+<div class="result-box logged guided-logged"></div>
                         <div class="guided-safety">
                             <div class="mini-disclaimer">
                                 <p>NextStep is an educational and supportive tool in development. It does not diagnose medical conditions, provide medical advice, or replace doctors, therapists, or other qualified healthcare professionals. Not identifying warning signs does not guarantee that a symptom is harmless.</p>
