@@ -1230,6 +1230,62 @@ NextStep helps people experiencing health anxiety understand their next steps. A
     </ol>
     <p>This exercise can help you focus on the present moment. It does not replace medical care or emergency guidance.</p>
 </div>
+
+<div class="breathing-exercise" style="margin:20px 0;padding:24px;border:1px solid #b9d9d5;border-radius:14px;background:#f0faf8;color:#173b46;text-align:center;">
+    <h4>Take a calming breath</h4>
+    <p>Follow the circle at a comfortable pace. You can stop anytime.</p>
+    <div id="breathing-circle" aria-hidden="true" style="width:110px;height:110px;margin:28px auto;border-radius:50%;background:#62b6ac;transition:transform 4s ease-in-out;"></div>
+    <p id="breathing-instruction" role="status" aria-live="polite">Press Start when you're ready.</p>
+    <button type="button" id="breathing-start">Start breathing</button>
+    <button type="button" id="breathing-stop" disabled>Stop</button>
+    <p style="font-size:13px;margin-top:16px;">This optional exercise does not replace medical care or emergency guidance.</p>
+</div>
+<script nonce="{{ $cspNonce ?? '' }}">
+(function () {
+    var circle = document.getElementById('breathing-circle');
+    var instruction = document.getElementById('breathing-instruction');
+    var start = document.getElementById('breathing-start');
+    var stop = document.getElementById('breathing-stop');
+    if (!circle || !instruction || !start || !stop) return;
+
+    var timer = null;
+    var running = false;
+
+    function breatheIn() {
+        if (!running) return;
+        instruction.textContent = 'Breathe in gently for 4 seconds';
+        circle.style.transitionDuration = '4s';
+        circle.style.transform = 'scale(1.5)';
+        timer = setTimeout(breatheOut, 4000);
+    }
+
+    function breatheOut() {
+        if (!running) return;
+        instruction.textContent = 'Breathe out slowly for 6 seconds';
+        circle.style.transitionDuration = '6s';
+        circle.style.transform = 'scale(1)';
+        timer = setTimeout(breatheIn, 6000);
+    }
+
+    start.addEventListener('click', function () {
+        if (running) return;
+        running = true;
+        start.disabled = true;
+        stop.disabled = false;
+        breatheIn();
+    });
+
+    stop.addEventListener('click', function () {
+        running = false;
+        clearTimeout(timer);
+        circle.style.transitionDuration = '0s';
+        circle.style.transform = 'scale(1)';
+        instruction.textContent = 'Stopped. You can restart anytime.';
+        start.disabled = false;
+        stop.disabled = true;
+    });
+})();
+</script>
 <div class="result-box logged guided-logged"></div>
                         <div class="guided-safety">
                             <div class="mini-disclaimer">

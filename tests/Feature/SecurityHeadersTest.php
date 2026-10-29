@@ -42,7 +42,7 @@ class SecurityHeadersTest extends TestCase
         $this->assertSame(1, preg_match("/script-src 'nonce-([A-Za-z0-9]+)'/", $response->headers->get('Content-Security-Policy'), $match));
 
         $html = $response->getContent();
-        $this->assertSame(2, substr_count($html, '<script'));
+        $this->assertSame(3, substr_count($html, '<script'));
         $this->assertSame(2, substr_count($html, '<script nonce="'.$match[1].'">'));
 
         // Inline event handlers would be blocked by the policy.
