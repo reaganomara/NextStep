@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AiDemoController;
+use App\Http\Controllers\ChatPageController;
 use App\Http\Controllers\GuidedDemoController;
 use App\Http\Controllers\SafetyDemoController;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,5 @@ Route::post('/guided-demo/{scenario}', [GuidedDemoController::class, 'run'])
 Route::post('/ai-demo/{scenario}', [AiDemoController::class, 'run'])
     ->middleware('throttle:ai-demo')
     ->name('ai-demo.run');
+Route::get('/chat', [ChatPageController::class, 'index'])
+    ->name('chat.index');

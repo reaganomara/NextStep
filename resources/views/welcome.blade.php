@@ -1058,7 +1058,8 @@
         </div>
     </div>
 
-    <header class="hero">
+ 
+  <header class="hero">
         <span class="hero-ring" aria-hidden="true"></span>
         <span class="hero-ring small" aria-hidden="true"></span>
         <div class="container">
@@ -1080,6 +1081,7 @@ NextStep helps people experiencing health anxiety understand their next steps. A
     </header>
 
     <main id="main" tabindex="-1">
+
         <section aria-label="About health anxiety and NextStep">
             <span class="decor decor-sage" aria-hidden="true" style="width: 420px; height: 420px; top: -60px; left: -180px;"></span>
             <span class="decor decor-yellow" aria-hidden="true" style="width: 360px; height: 360px; bottom: -120px; right: -140px;"></span>
