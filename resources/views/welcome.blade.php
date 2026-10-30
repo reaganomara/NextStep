@@ -1240,7 +1240,7 @@ NextStep helps people experiencing health anxiety understand their next steps. A
     <button type="button" id="breathing-stop" disabled>Stop</button>
     <p style="font-size:13px;margin-top:16px;">This optional exercise does not replace medical care or emergency guidance.</p>
 </div>
-<script nonce="{{ $cspNonce ?? '' }}">
+<script nonce="{{ $cspNonce ?? Vite::cspNonce() }}">
 (function () {
     var circle = document.getElementById('breathing-circle');
     var instruction = document.getElementById('breathing-instruction');
